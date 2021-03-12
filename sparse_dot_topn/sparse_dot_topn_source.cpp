@@ -129,3 +129,53 @@ void sparse_dot_topn_source(int n_row,
         Cp[i+1] = nnz;
     }
 }
+
+double dot_product(double *A, double *B, int n) {
+    double res = 0;
+    for(int i=0;i<n;i++) res += A[i] * B[i];
+    return res;
+}
+
+void dense_dot_topn_source(int n_row,
+                        int n_col,
+                        double Ax[], //data of A
+                        int m_row,
+                        double Bx[], //data of B
+                        int ntop,
+                        double lower_bound,
+                        int Cp[],
+                        int Cj[],
+                        double Cx[])
+{
+    std::vector<std::pair<double,int>> candidates(m_row);
+    double sums[m_row];
+
+
+    int nnz = 0;
+
+    Cp[0] = 0;
+
+    for(int i = 0; i < n_row; i++){
+        int len = 0;
+        for(int j = 0; j< m_row; j++) {
+            sums[j] = dot_product(&Ax[i*n_col], &Bx[j*n_col], n_col);
+            if (sums[j] > lower_bound) {
+                candidates[len++] = std::make_pair(-sums[j], j);
+            }
+        }
+        if (len > ntop){
+            std::partial_sort(candidates.begin(), candidates.begin()+ntop, candidates.begin()+len);
+            len = ntop;
+        } else {
+            std::sort(candidates.begin(), candidates.begin()+len);
+        }
+
+        for(int a=0; a < len; a++){
+            Cj[nnz] = candidates[a].second;
+            Cx[nnz] = -candidates[a].first;
+            nnz++;
+        }
+
+        Cp[i+1] = nnz;
+    }
+}

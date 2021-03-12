@@ -86,3 +86,40 @@ cpdef sparse_dot_topn(
 
     sparse_dot_topn_source(n_row, n_col, Ap, Aj, Ax, Bp, Bj, Bx, ntop, lower_bound, Cp, Cj, Cx)
     return
+
+
+cdef extern from "sparse_dot_topn_source.h":
+
+    cdef void dense_dot_topn_source(
+                        int n_row,
+                        int n_col,
+                        double Ax[],
+                        int m_row,
+                        double Bx[],
+                        int topn,
+                        double lower_bound,
+                        int Cp[],
+                        int Cj[],
+                        double Cx[]);
+
+cpdef dense_dot_topn(
+        int n_row,
+        int n_col,
+        np.ndarray[double, ndim=1] a_data,
+        int m_row,
+        np.ndarray[double, ndim=1] b_data,
+        int ntop,
+        double lower_bound,
+        np.ndarray[int, ndim=1] c_indptr,
+        np.ndarray[int, ndim=1] c_indices,
+        np.ndarray[double, ndim=1] c_data
+    ):
+
+    cdef double* Ax = &a_data[0]
+    cdef double* Bx = &b_data[0]
+    cdef int* Cp = &c_indptr[0]
+    cdef int* Cj = &c_indices[0]
+    cdef double* Cx = &c_data[0]
+
+    dense_dot_topn_source(n_row, n_col, Ax, m_row, Bx, ntop, lower_bound, Cp, Cj, Cx)
+    return

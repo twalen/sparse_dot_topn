@@ -39,4 +39,16 @@ extern void sparse_dot_topn_source(int n_row,
       	                    int Cj[],
       	                    double Cx[]);
 
+extern void dense_dot_topn_source(int n_row,
+      	              int n_col,
+      	              double Ax[],
+					  int m_row,
+      	              double Bx[],
+                      int ntop,
+                      double lower_bound,
+      	                    int Cp[],
+      	                    int Cj[],
+      	                    double Cx[]);
+
+
 #endif //UTILS_CPPCLASS_H
