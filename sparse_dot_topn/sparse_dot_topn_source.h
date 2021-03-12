@@ -26,29 +26,37 @@ struct candidate {int index; double value;};
 extern bool candidate_cmp(candidate c_i, candidate c_j);
 
 extern void sparse_dot_topn_source(int n_row,
-      	              int n_col,
-      	              int Ap[],
-      	              int Aj[],
-      	              double Ax[],
-      	              int Bp[],
-      	              int Bj[],
-      	              double Bx[],
-                      int ntop,
-                      double lower_bound,
-      	                    int Cp[],
-      	                    int Cj[],
-      	                    double Cx[]);
+                    int n_col,
+                    int Ap[],
+                    int Aj[],
+                    double Ax[],
+                    int Bp[],
+                    int Bj[],
+                    double Bx[],
+                    int ntop,
+                    double lower_bound,
+                    int Cp[],
+                    int Cj[],
+                    double Cx[]);
 
 extern void dense_dot_topn_source(int n_row,
-      	              int n_col,
-      	              double Ax[],
-					  int m_row,
-      	              double Bx[],
-                      int ntop,
-                      double lower_bound,
-      	                    int Cp[],
-      	                    int Cj[],
-      	                    double Cx[]);
+                    int n_col,
+                    const double Ax[],
+                    int m_row,
+                    const double Bx[],
+                    int ntop,
+                    double lower_bound,
+                    int Cp[],
+                    int Cj[],
+                    double Cx[]);
 
+extern void select_topn_source(int n_row,
+                    int n_col,
+                    const double Ax[],
+                    int ntop,
+                    double lower_bound,
+                    int Cp[],
+                    int Cj[],
+                    double Cx[]);
 
 #endif //UTILS_CPPCLASS_H

@@ -89,7 +89,7 @@ def awesome_cossim_topn(A, B, ntop, lower_bound=0, use_threads=False, n_jobs=1):
     return csr_matrix((data, indices, indptr), shape=(M, N))
 
 
-def awesome_dense_cossim_topn(A, B, ntop, lower_bound=0):
+def awesome_dense_cossim_topn_experimental(A, B, ntop, lower_bound=0):
     M, K1 = A.shape
     N, K2 = B.shape
 
@@ -109,6 +109,34 @@ def awesome_dense_cossim_topn(A, B, ntop, lower_bound=0):
     ct.dense_dot_topn(
         M, K1, A.flatten(),
         N, B.flatten(),
+        ntop,
+        lower_bound,
+        indptr, indices, data)
+
+    return csr_matrix((data, indices, indptr), shape=(M, N))
+
+
+def awesome_dense_cossim_topn(A, B, ntop, lower_bound=0):
+    M, K1 = A.shape
+    K2, N = B.shape
+
+    if K1 != K2:
+        err_str = 'A matrix multiplication will be operated. A.shape[1] must be equal to B.shape[0]!'
+        raise ValueError(err_str)
+
+    idx_dtype = np.int32
+
+    nnz_max = M*ntop
+
+    # filled matrices from here on
+    indptr = np.empty(M+1, dtype=idx_dtype)
+    indices = np.empty(nnz_max, dtype=idx_dtype)
+    data = np.empty(nnz_max, dtype=A.dtype)
+
+    dot_res = A.dot(B)
+
+    ct.select_topn(
+        M, N, dot_res.flatten(),
         ntop,
         lower_bound,
         indptr, indices, data)

@@ -70,8 +70,6 @@ def helper_awesome_cossim_topn_dense(a_dense, b_dense, topn_func=awesome_cossim_
         assert len(awesome_result_top3) == len(sparse_result_top3)
     # top NUM_CANDIDATES candidates selected, below PRUNE_THRESHOLD similarity pruned
     if not all_none2:
-        print("awesome", pruned_awesome_result_top3)
-        print("dot", pruned_sparse_result_top3)
         np.testing.assert_array_almost_equal(pruned_awesome_result_top3, pruned_sparse_result_top3)
     else:
         len(pruned_awesome_result_top3) == len(pruned_sparse_result_top3)
@@ -127,7 +125,7 @@ def helper_awesome_cossim_topn_sparse(a_sparse, b_sparse, topn_func=awesome_coss
 
 @pytest.mark.parametrize("topn_func", [
     awesome_cossim_topn, 
-    lambda A, B, t, l: awesome_dense_cossim_topn(A.toarray(), B.T.toarray(), t, l),
+    lambda A, B, t, l: awesome_dense_cossim_topn(A.toarray(), B.toarray(), t, l),
 ])
 def test_awesome_cossim_topn_manually(topn_func):
     # a simple case
@@ -188,7 +186,7 @@ def test_awesome_cossim_top_all_zeros():
 @pytest.mark.filterwarnings("ignore:Changing the sparsity structure of a csr_matrix is expensive")
 @pytest.mark.parametrize("topn_func", [
     awesome_cossim_topn, 
-    lambda A, B, t, l: awesome_dense_cossim_topn(A.toarray(), B.T.toarray(), t, l),
+    lambda A, B, t, l: awesome_dense_cossim_topn(A.toarray(), B.toarray(), t, l),
 ])
 def test_awesome_cossim_top_small_matrix(topn_func):
     # test with small matrix
@@ -197,7 +195,7 @@ def test_awesome_cossim_top_small_matrix(topn_func):
     for _ in range(10):
         a_sparse = rand(300, nr_vocab, density=density, format='csr')
         b_sparse = rand(800, nr_vocab, density=density, format='csr')
-        helper_awesome_cossim_topn_sparse(a_sparse, b_sparse, topn_func=topn_func, flag=False)
+        helper_awesome_cossim_topn_sparse(a_sparse, b_sparse, topn_func=topn_func, flag=True)
 
 
 @pytest.mark.filterwarnings("ignore:Comparing a sparse matrix with a scalar greater than zero")
@@ -234,4 +232,4 @@ def test_awesome_cossim_top_large_matrix():
         b_sparse = coo_matrix((data, (row, cols)), shape=(n_samples, nr_vocab))
         b_sparse = b_sparse.tocsr()
 
-        helper_awesome_cossim_topn_sparse(a_sparse, b_sparse, flag=False)
+        helper_awesome_cossim_topn_sparse(a_sparse, b_sparse, flag=True)

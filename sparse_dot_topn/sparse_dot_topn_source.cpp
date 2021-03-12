@@ -130,7 +130,7 @@ void sparse_dot_topn_source(int n_row,
     }
 }
 
-double dot_product(double *A, double *B, int n) {
+double dot_product(const double *A, const double *B, int n) {
     double res = 0;
     for(int i=0;i<n;i++) res += A[i] * B[i];
     return res;
@@ -138,9 +138,9 @@ double dot_product(double *A, double *B, int n) {
 
 void dense_dot_topn_source(int n_row,
                         int n_col,
-                        double Ax[], //data of A
+                        const double Ax[], //data of A
                         int m_row,
-                        double Bx[], //data of B
+                        const double Bx[], //data of B
                         int ntop,
                         double lower_bound,
                         int Cp[],
@@ -161,6 +161,46 @@ void dense_dot_topn_source(int n_row,
             sums[j] = dot_product(&Ax[i*n_col], &Bx[j*n_col], n_col);
             if (sums[j] > lower_bound) {
                 candidates[len++] = std::make_pair(-sums[j], j);
+            }
+        }
+        if (len > ntop){
+            std::partial_sort(candidates.begin(), candidates.begin()+ntop, candidates.begin()+len);
+            len = ntop;
+        } else {
+            std::sort(candidates.begin(), candidates.begin()+len);
+        }
+
+        for(int a=0; a < len; a++){
+            Cj[nnz] = candidates[a].second;
+            Cx[nnz] = -candidates[a].first;
+            nnz++;
+        }
+
+        Cp[i+1] = nnz;
+    }
+}
+
+void select_topn_source(int n_row,
+                    int n_col,
+                    const double Ax[],
+                    int ntop,
+                    double lower_bound,
+                    int Cp[],
+                    int Cj[],
+                    double Cx[]) 
+{
+    std::vector<std::pair<double,int>> candidates(n_col);
+
+    int nnz = 0;
+
+    Cp[0] = 0;
+
+    for(int i = 0; i < n_row; i++){
+        const double *curr = &Ax[i*n_col];
+        int len=0;
+        for(int j = 0; j< n_col; j++) {
+            if (curr[j] > lower_bound) {
+                candidates[len++] = std::make_pair(-curr[j], j);
             }
         }
         if (len > ntop){

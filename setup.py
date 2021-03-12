@@ -28,7 +28,7 @@ with open(os.path.join(here, 'README.md')) as f:
 if os.name == 'nt':
     extra_compile_args = ["-Ox"]
 else:
-    extra_compile_args = ['-std=c++0x', '-pthread', '-O3', '-mtune=native', '-ftree-vectorize', '-mavx', '-fopt-info-vec', '-fopt-info-vec-optimized']
+    extra_compile_args = ['-std=c++0x', '-pthread', '-O3', '-mtune=native', '-ftree-vectorize', '-mavx']
 
 original_ext = Extension('sparse_dot_topn.sparse_dot_topn',
                          sources=['./sparse_dot_topn/sparse_dot_topn.pyx',
